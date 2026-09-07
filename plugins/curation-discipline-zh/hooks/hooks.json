@@ -1,0 +1,17 @@
+{
+  "description": "Bash 指令碰到已被取代或非正本的資料源時，先停下來問。請把 canonical-store-guard.py 裡的 PATTERNS 改成你自己專案的陷阱——出貨時的樣式是範例，在你的專案裡不會命中任何東西。",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"${CLAUDE_PLUGIN_ROOT}/hooks/canonical-store-guard.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

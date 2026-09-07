@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jerryliu0103/curation-discipline/staging-record.schema.json",
+  "title": "Staging batch",
+  "description": "The envelope an agent writes to data/staging/<batch>.json. Nothing here reaches the canonical store until a human moves it. The three array fields at the top level are all required on purpose: an agent that reports only what it kept cannot be reviewed.",
+  "type": "object",
+  "required": ["batch", "records", "unresolved", "deliberately_discarded"],
+  "additionalProperties": false,
+  "properties": {
+    "batch": {
+      "type": "string",
+      "description": "Batch identifier, conventionally <date>-<source>. Appears in the filename too."
+    },
+    "records": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/record" }
+    },
+    "unresolved": {
+      "type": "array",
+      "description": "Names or references that could not be resolved to an existing entity. NEVER auto-create these — a human decides. Empty means you checked and found none, not that you skipped the check.",
+      "items": {
+        "type": "object",
+        "required": ["raw_name", "context"],
+        "properties": {
+          "raw_name": { "type": "string" },
+          "context": { "type": "string" },
+          "closest_candidates": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "deliberately_discarded": {
+      "type": "array",
+      "description": "What was seen and NOT kept, with a reason and a location. This is the only place a reviewer can catch content misfiled as noise; an empty list is a red flag rather than a clean result.",
+      "items": {
+        "type": "object",
+        "required": ["content", "reason"],
+        "properties": {
+          "content": { "type": "string", "description": "Short summary — not the original text." },
+          "location": { "type": "string", "description": "Where in the source, so a reviewer can go and look." },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "routing_table": {
+      "type": "array",
+      "description": "Required for extraction agents. Every input passage appears here with the categories it was split into. Reconcile in BOTH directions before delivering: every passage present, and every tag having a counterpart in the output.",
+      "items": {
+        "type": "object",
+        "required": ["item", "categories"],
+        "properties": {
+          "item": { "type": "string" },
+          "categories": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "required": ["type", "key", "fields", "source", "retrieved_at"],
+      "properties": {
+        "type": { "type": "string", "description": "Entity or relation type in your schema." },
+        "key": { "type": "string", "description": "Stable identifier — the thing you resolve against, not the display name." },
+        "fields": { "type": "object", "description": "Payload. Use null for a value the controlled vocabulary cannot express; do not substitute the nearest term." },
+        "source": { "type": "string", "description": "Who said it: URL, document id + location, or informant." },
+        "retrieved_at": { "type": "string", "format": "date", "description": "When it was collected. Not bookkeeping — once sources coexist, 'which is current' is unanswerable without it." },
+        "measurement_conditions": { "type": ["string", "null"], "description": "For measured values: under what conditions. Two sources that appear to contradict each other may have measured different things." },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "Low is a legitimate value. Use it when a field was inferred from prose rather than read as stated." },
+        "notes": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

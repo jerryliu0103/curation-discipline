@@ -1,0 +1,33 @@
+{
+  "name": "curation-discipline",
+  "owner": {
+    "name": "Jerry Liu",
+    "url": "https://github.com/jerryliu0103"
+  },
+  "metadata": {
+    "version": "0.1.0",
+    "description": "Discipline for AI-assisted data curation: a staging gate agents cannot bypass, read-only enforced structurally, and a catalogue of failures that produce no error message."
+  },
+  "plugins": [
+    {
+      "name": "curation-discipline",
+      "version": "0.1.0",
+      "description": "Keep an AI agent from silently corrupting your database. A staging gate no agent can write past, read-only enforced by hook rather than by prompt, provenance-coordinate deduplication, and a catalogue of pipeline failures that succeed loudly while losing data.",
+      "author": {
+        "name": "Jerry Liu",
+        "url": "https://github.com/jerryliu0103"
+      },
+      "source": "./plugins/curation-discipline"
+    },
+    {
+      "name": "curation-discipline-zh",
+      "version": "0.1.0",
+      "description": "AI 資料策展的紀律（繁體中文版）：代理繞不過的 staging 閘門、用 hook 而非提示強制的唯讀、以來源座標去重，以及一份「不會報錯的失敗」清單。",
+      "author": {
+        "name": "Jerry Liu",
+        "url": "https://github.com/jerryliu0103"
+      },
+      "source": "./plugins/curation-discipline-zh"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jerryliu0103/curation-discipline/staging-record.zh.schema.json",
+  "title": "Staging 批次",
+  "description": "代理寫到 data/staging/<batch>.json 的外層結構。在人把它搬過去之前，這裡沒有任何東西會進正本。頂層那三個陣列都是刻意設成必填的：一個只回報自己留下了什麼的代理，是無法被審查的。",
+  "type": "object",
+  "required": ["batch", "records", "unresolved", "deliberately_discarded"],
+  "additionalProperties": false,
+  "properties": {
+    "batch": {
+      "type": "string",
+      "description": "批次識別碼，慣例是 <日期>-<來源>。也會出現在檔名裡。"
+    },
+    "records": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/record" }
+    },
+    "unresolved": {
+      "type": "array",
+      "description": "解析不到既有項目的名字或參照。絕不自動建檔——由人決定。空陣列的意思是「查過了，沒有」，不是「跳過沒查」。",
+      "items": {
+        "type": "object",
+        "required": ["raw_name", "context"],
+        "properties": {
+          "raw_name": { "type": "string" },
+          "context": { "type": "string" },
+          "closest_candidates": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "deliberately_discarded": {
+      "type": "array",
+      "description": "看過但沒有留下的東西，附理由與位置。這是唯一能讓審查者抓到「有價值的內容被誤判成雜訊」的地方；空清單是紅旗，不是乾淨的結果。",
+      "items": {
+        "type": "object",
+        "required": ["content", "reason"],
+        "properties": {
+          "content": { "type": "string", "description": "簡短摘要——不是原文。" },
+          "location": { "type": "string", "description": "在來源的哪個位置，讓審查者可以自己去看。" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "routing_table": {
+      "type": "array",
+      "description": "萃取類代理必填。每一則輸入都出現在這裡，標明它被拆成了哪幾類。交付前要雙向核對：每一則都在，而且每一個標記在產出裡都有對應項。",
+      "items": {
+        "type": "object",
+        "required": ["item", "categories"],
+        "properties": {
+          "item": { "type": "string" },
+          "categories": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "record": {
+      "type": "object",
+      "required": ["type", "key", "fields", "source", "retrieved_at"],
+      "properties": {
+        "type": { "type": "string", "description": "你 schema 裡的項目或關係型別。" },
+        "key": { "type": "string", "description": "穩定識別碼——你拿去解析比對的那個，不是顯示名。" },
+        "fields": { "type": "object", "description": "內容。受控詞彙表達不了的值用 null，不要拿最接近的詞代替。" },
+        "source": { "type": "string", "description": "誰說的：網址、文件編號＋位置、或受訪者。" },
+        "retrieved_at": { "type": "string", "format": "date", "description": "哪一天蒐集的。這不是流水帳——一旦多個來源並存，「哪一筆是現行的」沒有日期就無法回答。" },
+        "measurement_conditions": { "type": ["string", "null"], "description": "量測值專用：在什麼條件下量的。兩個看似矛盾的來源，可能量的是不同的東西。" },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1, "description": "低是合法的值。當某個欄位是從文字描述推斷、而非讀到明確寫著時使用。" },
+        "notes": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

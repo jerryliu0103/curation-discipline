@@ -1,0 +1,9 @@
+{
+  "name": "curation-discipline",
+  "version": "0.1.0",
+  "description": "Keep an AI agent from silently corrupting your database. A staging gate no agent can write past, read-only enforced by hook rather than by prompt, provenance-coordinate deduplication, and a catalogue of pipeline failures that succeed loudly while losing data.",
+  "author": {
+    "name": "Jerry Liu",
+    "url": "https://github.com/jerryliu0103"
+  }
+}

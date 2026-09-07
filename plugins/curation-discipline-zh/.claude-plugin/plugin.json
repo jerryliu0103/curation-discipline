@@ -1,0 +1,9 @@
+{
+  "name": "curation-discipline-zh",
+  "version": "0.1.0",
+  "description": "AI 資料策展的紀律（繁體中文版）：代理繞不過的 staging 閘門、用 hook 而非提示強制的唯讀、以來源座標去重，以及一份「不會報錯的失敗」清單。",
+  "author": {
+    "name": "Jerry Liu",
+    "url": "https://github.com/jerryliu0103"
+  }
+}

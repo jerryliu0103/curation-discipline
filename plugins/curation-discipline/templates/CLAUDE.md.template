@@ -1,0 +1,92 @@
+# <project name>
+
+<!--
+  Skeleton for the project-level rules of a curated dataset.
+
+  The principle behind what goes here: CLAUDE.md is loaded into every session, so it
+  should hold only what causes damage if unread. General method belongs in a skill;
+  this file holds the facts specific to THIS project, and the incidents that have
+  already happened in it.
+
+  Delete every section you do not need. An accurate short file beats a thorough file
+  nobody finishes reading.
+-->
+
+## Purpose
+
+<one paragraph: what this dataset is for, and who reads it>
+
+## The canonical store
+
+- **Canonical**: <where the real data lives>
+- **Derived, never authoritative**: <mirrors, exports, local copies, caches>
+- **How to reach it**: <the exact command>
+- **Traps**: <commands or variables that reach the wrong copy WITHOUT erroring>
+
+> Name the traps explicitly. A wrong-target command that returns plausible data and
+> exits zero will be used for months before anyone notices.
+
+## Write pipeline — every agent follows this
+
+1. `curator` collects into `data/staging/*.json` — never the store
+2. `validator` checks format, provenance, duplicates, logic — writes nothing
+3. A human reads the report
+4. A human runs the write
+
+Method and rationale: the `curation-pipeline` skill. What is written here is the part
+specific to this project:
+
+- <which tables agents may propose writes to>
+- <which fields are mandatory>
+- <which operations require a second pair of eyes>
+
+## Provenance requirements
+
+Every row carries:
+
+- `source` — who said it
+- `retrieved_at` — when it was collected
+- <any project-specific coordinate: measurement conditions, rights status, version>
+
+## Provenance coordinates for duplicate detection
+
+| Table | Coordinate |
+|---|---|
+| <table> | <(columns) that identify the source location> |
+
+Text comparison does not detect re-imports — a re-import is re-worded every time.
+See the `provenance-and-dedup` skill.
+
+## Naming and entity resolution
+
+- Resolution order: <primary name → aliases → secondary axis>
+- **Unresolved names are never auto-created.** They go to
+  `data/staging/unresolved.json` for a human.
+- Controlled vocabularies: <where they live>. **When no value fits, leave NULL and
+  report it** — do not substitute the nearest term.
+
+## Incidents in this project
+
+<!--
+  The most valuable section, and the one that is always empty at first.
+
+  One entry per thing that went wrong and produced no error. Date it, say what it
+  cost, say what catches it now. When someone asks "why is this rule here", this is
+  the answer — and if this section is missing, the rule eventually gets removed by
+  someone who cannot see what it was for.
+
+  Format:
+  ### <date> — <one-line summary>
+  What happened. What made it silent. What catches it now.
+-->
+
+## Scheduled work
+
+- <job>: <when> — <what it produces, and where>
+- **Scheduled output is never authoritative.** It lands in staging and goes through
+  the same human approval as everything else.
+
+## Development rules
+
+- <test/lint/review commands that must run before a change is done>
+- <what must be committed deliberately rather than swept up by automation>

@@ -1,0 +1,39 @@
+{
+  "_comment": [
+    "Example .claude/settings.json for a curated-dataset project.",
+    "",
+    "The plugin already wires canonical-store-guard.py plugin-wide via hooks/hooks.json,",
+    "and readonly-guard.py per-agent via the validator and reader frontmatter. You only",
+    "need this file if you are copying the guards into a project directly rather than",
+    "installing the plugin — or to add the permission rules below, which the plugin",
+    "cannot set for you.",
+    "",
+    "On the ask rules: Bash permission rules match a command PREFIX. Real commands are",
+    "compound ('cd x && psql ...') so the prefix often will not match. These rules are a",
+    "backstop for the simple cases; the real interception is the hook."
+  ],
+
+  "permissions": {
+    "ask": [
+      "Bash(psql \"$STALE_DB_URL\"*)",
+      "Bash(pg_dump \"$STALE_DB_URL\"*)",
+      "Bash(DB_ALLOW_LOCAL=1*)"
+    ]
+  },
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": ["${CLAUDE_PROJECT_DIR}/hooks/canonical-store-guard.py"],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

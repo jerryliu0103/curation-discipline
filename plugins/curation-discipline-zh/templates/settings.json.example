@@ -1,0 +1,38 @@
+{
+  "_comment": [
+    "策展資料集專案的 .claude/settings.json 範例。",
+    "",
+    "plugin 已經透過 hooks/hooks.json 把 canonical-store-guard.py 掛在整個 plugin 層，",
+    "並透過 validator 與 reader 的 frontmatter 把 readonly-guard.py 掛在代理層。",
+    "你只有在「直接把 guard 複製進專案而不是安裝 plugin」時才需要這個檔案——",
+    "或是為了加下面那些 permission 規則，那部分 plugin 沒辦法替你設。",
+    "",
+    "關於 ask 規則：Bash 的 permission 規則比對的是指令**前綴**。真實的指令常常是",
+    "複合的（'cd x && psql ...'），前綴多半接不住。這些規則是簡單情形的補強，",
+    "真正的攔截在 hook。"
+  ],
+
+  "permissions": {
+    "ask": [
+      "Bash(psql \"$STALE_DB_URL\"*)",
+      "Bash(pg_dump \"$STALE_DB_URL\"*)",
+      "Bash(DB_ALLOW_LOCAL=1*)"
+    ]
+  },
+
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python",
+            "args": ["${CLAUDE_PROJECT_DIR}/hooks/canonical-store-guard.py"],
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}
