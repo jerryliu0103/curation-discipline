@@ -43,7 +43,7 @@ jobs:
           # script exits non-zero rather than recording zeros, so a missing or
           # under-scoped secret fails the job loudly instead of writing a
           # plausible, permanently wrong history.
-          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          TRAFFIC_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # TEMP: probing whether the default token works
         run: python3 .github/scripts/snapshot_traffic.py
 
       - name: Commit if anything changed
