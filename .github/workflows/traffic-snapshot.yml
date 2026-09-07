@@ -1,0 +1,61 @@
+name: traffic snapshot
+
+# GitHub keeps repository traffic for 14 days and then deletes it, silently.
+# This job copies it somewhere permanent once a day.
+#
+# Results land on the `metrics` branch, not `main`, for two reasons: a daily commit
+# on main would bury the real history, and pushes to main are what the plugin
+# directory re-screens on update. Nothing here should trigger that.
+
+on:
+  schedule:
+    # 03:17 UTC daily. Off the hour on purpose -- GitHub's scheduler is congested
+    # at :00 and jobs there are delayed or dropped.
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: traffic-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the script (main)
+        uses: actions/checkout@v4
+
+      - name: Check out the metrics branch
+        uses: actions/checkout@v4
+        with:
+          ref: metrics
+          path: .metrics
+
+      - name: Snapshot traffic
+        env:
+          SNAPSHOT_REPO: ${{ github.repository }}
+          SNAPSHOT_DIR: .metrics/metrics
+          # NOT secrets.GITHUB_TOKEN. The traffic endpoints require push access,
+          # which the default workflow token does not have -- it returns 403. The
+          # script exits non-zero rather than recording zeros, so a missing or
+          # under-scoped secret fails the job loudly instead of writing a
+          # plausible, permanently wrong history.
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+        run: python3 .github/scripts/snapshot_traffic.py
+
+      - name: Commit if anything changed
+        working-directory: .metrics
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A metrics
+          if git diff --cached --quiet; then
+            echo "No change."
+            exit 0
+          fi
+          git commit -m "traffic snapshot $(date -u +%Y-%m-%d)"
+          git push origin metrics
