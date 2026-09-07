@@ -38,12 +38,14 @@ jobs:
         env:
           SNAPSHOT_REPO: ${{ github.repository }}
           SNAPSHOT_DIR: .metrics/metrics
-          # NOT secrets.GITHUB_TOKEN. The traffic endpoints require push access,
-          # which the default workflow token does not have -- it returns 403. The
-          # script exits non-zero rather than recording zeros, so a missing or
-          # under-scoped secret fails the job loudly instead of writing a
-          # plausible, permanently wrong history.
-          TRAFFIC_TOKEN: ${{ secrets.GITHUB_TOKEN }}   # TEMP: probing whether the default token works
+          # NOT secrets.GITHUB_TOKEN. Verified, not assumed: run 34083588757 used the
+          # default workflow token and got 403 from traffic/clones. The traffic
+          # endpoints require push access, which GITHUB_TOKEN does not have.
+          #
+          # That run is also the proof the guard works -- it exited non-zero instead
+          # of recording zeros, so a missing or under-scoped secret fails the job
+          # loudly rather than writing a plausible, permanently wrong history.
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
         run: python3 .github/scripts/snapshot_traffic.py
 
       - name: Commit if anything changed
