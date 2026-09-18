@@ -128,7 +128,9 @@ The domain has been removed; **the incidents have not.** Every entry in
 That is the part that is hard to get from a blog post — not the pipeline shape, which is
 obvious once stated, but the specific ways it fails while reporting success.
 
-See [docs/why.md](docs/why.md) for the longer version.
+See [docs/why.md](docs/why.md) for the longer version, and
+[Ten data-pipeline failures that report success](docs/ten-failures-that-report-success.md)
+for the incidents written up on their own — readable without installing anything.
 
 ## License
 
